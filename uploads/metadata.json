@@ -1,10 +1,23 @@
 [
     {
-        "image_path": "uploads/089b139d-c59c-4961-bcd0-c083d862a1b6.jpg",
-        "comment": "2024-06-29-17-58-03 great event!!\n"
+        "image_path": "uploads/bd0bbf54-bab9-43f1-b3bd-dc13ebbad749.jpg",
+        "timestamp": "2024-06-29-19-05-12",
+        "comment": "MOre shit!",
+        "location": "long:000 lat:000",
+        "classification": "graffiti"
     },
     {
-        "image_path": "uploads/3aef5042-56cd-4198-b397-b79be3a75893.jpg",
-        "comment": "2024-06-29-18-20-31 great building"
+        "image_path": "uploads/17c01ee3-4c01-4cc4-af4c-e549cb31e352.jpg",
+        "timestamp": "2024-06-29-19-06-22",
+        "comment": "more garffiti",
+        "location": "long:000 lat:000",
+        "classification": "graffiti"
+    },
+    {
+        "image_path": "uploads/5b4c57fe-830d-41b8-9f3c-84f6029e7d46.jpg",
+        "timestamp": "2024-06-29-19-07-51",
+        "comment": "broken again",
+        "location": "long:000 lat:000",
+        "classification": "windows"
     }
 ]

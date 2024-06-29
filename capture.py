@@ -49,7 +49,8 @@ st.sidebar.page_link("pages/weekly_report.py", label="Weekly Report", icon="👋
 uploaded_file = st.file_uploader("Choose an image...", type=['png', 'jpg', 'jpeg'])
 comment = st.text_area("Comment here...")
 timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-comment = timestamp + " " + comment
+location = "long:000 lat:000"
+classification = "windows"
 
 if st.button('Submit Comment'):
     if uploaded_file is not None and comment:
@@ -59,7 +60,10 @@ if st.button('Submit Comment'):
         # Append the new metadata to session state
         st.session_state.metadata.append({
             "image_path": image_path,
-            "comment": comment
+            "timestamp": timestamp,
+            "comment": comment,
+            "location": location,
+            "classification": classification    
         })
 
     # Save the updated metadata to the JSON file
