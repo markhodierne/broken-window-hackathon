@@ -19,5 +19,19 @@
         "comment": "broken again",
         "location": "long:000 lat:000",
         "classification": "windows"
+    },
+    {
+        "image_path": "uploads/64ea6dfc-88c6-4878-89b3-aee0047cde84.jpg",
+        "timestamp": "2024-06-30-13-14-29",
+        "comment": "Wonderful building",
+        "location": "long:000 lat:000",
+        "classification": "windows"
+    },
+    {
+        "image_path": "uploads/15492a84-1470-48a3-ad35-081d5528c299.jpg",
+        "timestamp": "2024-06-30-13-17-13",
+        "comment": "What a mess!!",
+        "location": "long:000 lat:000",
+        "classification": "windows"
     }
 ]
