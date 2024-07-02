@@ -1,0 +1,37 @@
+[
+    {
+        "image_path": "uploads/bd0bbf54-bab9-43f1-b3bd-dc13ebbad749.jpg",
+        "timestamp": "2024-06-29-19-05-12",
+        "comment": "MOre shit!",
+        "location": "long:000 lat:000",
+        "classification": "graffiti"
+    },
+    {
+        "image_path": "uploads/17c01ee3-4c01-4cc4-af4c-e549cb31e352.jpg",
+        "timestamp": "2024-06-29-19-06-22",
+        "comment": "more garffiti",
+        "location": "long:000 lat:000",
+        "classification": "graffiti"
+    },
+    {
+        "image_path": "uploads/5b4c57fe-830d-41b8-9f3c-84f6029e7d46.jpg",
+        "timestamp": "2024-06-29-19-07-51",
+        "comment": "broken again",
+        "location": "long:000 lat:000",
+        "classification": "windows"
+    },
+    {
+        "image_path": "uploads/64ea6dfc-88c6-4878-89b3-aee0047cde84.jpg",
+        "timestamp": "2024-06-30-13-14-29",
+        "comment": "Wonderful building",
+        "location": "long:000 lat:000",
+        "classification": "windows"
+    },
+    {
+        "image_path": "uploads/15492a84-1470-48a3-ad35-081d5528c299.jpg",
+        "timestamp": "2024-06-30-13-17-13",
+        "comment": "What a mess!!",
+        "location": "long:000 lat:000",
+        "classification": "windows"
+    }
+]
