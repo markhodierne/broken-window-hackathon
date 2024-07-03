@@ -15,8 +15,7 @@ categories = [
     "broken window",
     "green spaces",
     "public buildings",
-    "sports and social events"
-    "sculptures"
+    "community events"
     "other"
 ]
 
