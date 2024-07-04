@@ -90,4 +90,4 @@ Within the scope of this hackathon, we have implemented a relatively simple AI-e
 6. Click 'Deploy!'
 
 ## License
-[MIT License](LICENSE). Copyright (c) 2024 Mark Hodierne, Kailash Balasubramaniyam.
+[MIT License](LICENSE) Copyright (c) 2024 Mark Hodierne, Kailash Balasubramaniyam
