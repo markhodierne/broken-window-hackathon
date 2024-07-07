@@ -20,7 +20,7 @@ Created by: [Mark Hodierne](https://github.com/mhodierne1402) and [Kailash Balas
 - Ensuring safety in public spaces
 - Reducing crime and anti-social behaviour
 
-This demonstration product was developed during a hackathon organized by [Future London](https://futurelondon.org/) with contributions from policymakers and tech enthusiasts. Ultimately, the app would be deployed on mobile devices, either as a stand-alone app or as an AI bot for existing WhatsApp community groups.
+This 'proof of concept' app was developed during a hackathon organized by [Future London](https://futurelondon.org/) with contributions from policymakers and tech enthusiasts. Ultimately, the app would be deployed on mobile devices, either as a stand-alone app or as an AI bot for existing WhatsApp community groups.
 
 Users are able to submit photos and/or comments about their local neighbourhood - things they love, like green spaces, public buildings, and community activities - and things they don't love, like graffiti, fly tipping, and broken windows. AI is leveraged to classify and analyze these reports - and track how things are changing over time. 
 

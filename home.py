@@ -1,3 +1,15 @@
+'''
+TO DO:
+1. fix geolocation and display on map
+2. create a dataset for the reports
+3. create a deployment for streamlit (AWS?)
+4. change documentation
+
+
+'''
+
+
+
 # Import the required libraries and modules
 import os
 import streamlit as st
@@ -11,7 +23,10 @@ tracker_file = "uploads/tracker.csv"
 load_dotenv()
 
 # Access the API token
-api_token = os.getenv('HUGGING_FACE_API_TOKEN')
+hf_api_token = os.getenv('HUGGING_FACE_API_TOKEN')
+openai_api_token = os.getenv('OPENAI_API_KEY')
+
+#api_token = st.secrets['HUGGING_FACE_API_TOKEN']
 
 # Image directory setup
 if not os.path.exists(uploads_dir):
@@ -25,7 +40,8 @@ if not os.path.exists(tracker_file):
 # Save the session state variables
 st.session_state.uploads_dir = uploads_dir
 st.session_state.tracker_file = tracker_file
-st.session_state.api_token = api_token
+st.session_state.hf_api_token = hf_api_token
+st.session_state.openai_api_token = openai_api_token
         
 # Create pages
 upload_photo = st.Page("upload.py", title="Upload Photo", icon="📸")
