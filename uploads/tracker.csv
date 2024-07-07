@@ -1,0 +1,12 @@
+image_path,classification,timestamp,latitude,longitude,comment
+uploads/1c3b43a4-49e9-4b47-9dd0-5066a399e53a.jpg,broken_window,2024-07-06 19:53:07.016249,51.5085,-0.1257,Mr Jones window broken again!
+0e6dd7ca-31d6-40cc-8c93-8bce373fb9a1.jpg,graffiti,2024-07-07 11:15:27.131036,51.5085,-0.1257,what a mess!
+51d9634a-4322-4016-8ab0-f31d0a80a8e2.jpg,public_buildings,2024-07-07 11:30:24.139870,None,None,great building
+caae8ca8-43e4-433c-8b74-357ddc98edbe.jpg,public_buildings,2024-07-07 11:31:07.912419,None,None,great building
+78c9f005-b2fc-4254-b42a-abff68033416.jpg,broken_window,2024-07-07 11:31:20.634916,None,None,great building
+4310b47c-2e99-41fe-8484-2d8dcf6327f0.jpg,other,2024-07-07 12:02:21.611168,51.5085,-0.1257,nice!!
+7b125630-cd6b-4b94-ac23-7c7e67ab4fe1.jpg,public_buildings,2024-07-07 12:06:23.022869,None,None,great
+f2edb29f-d999-4673-987a-09765e561dbc.jpg,public_buildings,2024-07-07 12:06:48.416501,None,None,great
+64129d15-9b68-4fe0-92b8-772d720e8fd5.jpg,broken_window,2024-07-07 12:07:07.827141,None,None,broken
+e0be197b-e931-42f9-bb20-9498ff0ee794.jpg,broken_window,2024-07-07 12:07:35.207209,None,None,broken
+c356dfe0-c2cb-4242-b3b7-597bc3c4722f.jpg,public_buildings,2024-07-07 12:07:51.027176,None,None,lib
