@@ -9,11 +9,14 @@ uploads_dir = st.session_state.uploads_dir
 tracker_file = st.session_state.tracker_file
 
 
-st.markdown("""
-<div style='text-align: center;'>
+st.markdown(
+    """
+    <div style='text-align: center;'>
     <h1>Reports Over Time by Category</h1>
-</div>
-""", unsafe_allow_html=True)
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
 
 st.divider()
 
@@ -49,7 +52,10 @@ col1, col2 = st.columns(2)
 with col1:
     st.subheader(f'Reports per Week ({selected_category})')
     fig_week, ax_week = plt.subplots(figsize=(5, 3))
-    ax_week.plot(comments_per_week.index, comments_per_week, marker='o', color='teal', label='Reports per Week')
+    ax_week.plot(
+        comments_per_week.index, comments_per_week, 
+        marker='o', color='teal', label='Reports per Week'
+    )
     ax_week.set_ylabel('Number of Reports')
     ax_week.grid(True)
     plt.xticks(rotation=45, ha='right')
@@ -59,7 +65,10 @@ with col1:
 with col2:
     st.subheader(f'Reports per Month ({selected_category})')
     fig_month, ax_month = plt.subplots(figsize=(5, 3))
-    ax_month.plot(comments_per_month.index, comments_per_month, marker='o', color='darkred', label='Reports per Month')
+    ax_month.plot(
+        comments_per_month.index, comments_per_month, 
+        marker='o', color='darkred', label='Reports per Month'
+    )
     ax_month.set_ylabel('Number of Reports')
     ax_month.grid(True)
     plt.xticks(rotation=45, ha='right')

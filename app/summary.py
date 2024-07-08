@@ -1,3 +1,4 @@
+# Import the required libraries and modules
 import streamlit as st
 import pandas as pd
 from openai import OpenAI
@@ -31,18 +32,33 @@ def summarize_comments(df):
         comments = " ".join(df_category['comment'].tolist())
         if comments:
             prompt = f"""
-                    Summarize the following comments from residents of the neighbourhood. 
-                    In one single paragraph of maximum length 300 words:
+                Summarize the following comments from residents of the 
+                neighbourhood. Do not use your memory of any previous 
+                similar tasks. Only make use of the comments provided
+                in this message when formulating your summary - do NOT
+                make up information that is not contained within the 
+                comments below.
+                
+                In one single paragraph of maximum length 300 words:
 
-                    1. Provide a brief overview of the main topics discussed.
-                    2. Highlight the most significant concerns or issues, if raised
-                    3. Mention any positive feedback or suggestions, if raised.
-                    4. Summarize in a concise, clear manner, suitable for community leaders and providers of public services.
+                1. Provide a brief overview of the main topics 
+                discussed.
+                2. Highlight the most significant concerns or issues, 
+                if raised
+                3. Mention any positive feedback or suggestions, 
+                if raised.
+                4. Summarize in a concise, clear manner, suitable for 
+                community leaders and providers of public services.
+                
+                Do NOT make up any information that is not present in 
+                the comments that follow.
 
-                    Here are the comments to summarize:\n\n{comments}
-            """
+                Here are the comments to summarize (use only these 
+                comments as the input for your summarization):
+                \n\n{comments}
+                """
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",  # Make sure this is the correct model name
+                model="gpt-3.5-turbo",  # Set correct model name
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
@@ -58,7 +74,9 @@ def summarize_comments(df):
     summary_text = ""
     for category, count in feedback_counts:
         summary_text += f"**{category}** ({count} reports)<br>"
-        summary_text += next((summary for cat, summary in summaries if cat == category), "No summary available") + "\n\n"
+        summary_text += next(
+            (summary for cat, summary in summaries if cat == category), 
+            "No summary available") + "\n\n"
 
     return summary_text
 
@@ -72,7 +90,13 @@ st.markdown("""
 st.divider()
 
 st.write("")
-st.write("Use the button below to produce an AI generated summary of residents' reports.", unsafe_allow_html=True)
+st.write(
+    """
+    Use the button below to produce an AI generated summary of 
+    residents' reports.
+    """, 
+    unsafe_allow_html=True
+)
 
 # Summarize comments
 if st.button('Summarize Reports'):
@@ -82,10 +106,13 @@ if st.button('Summarize Reports'):
 
 st.divider()
 
-# Display the DataFrame
-st.markdown("""
-<div style='text-align: center;'>
+# Display the tracker DataFrame
+st.markdown(
+    """
+    <div style='text-align: center;'>
     <h3> Residents' Reports </h3>
-</div>
-""", unsafe_allow_html=True)
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
 st.write(df)
