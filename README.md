@@ -42,7 +42,7 @@ The app utilizes on two AI models to enhance its functionality:
 
 1. **Classification Model**: Automatically categorizes user reports into predefined categories (e.g., Graffiti, Garbage, Broken Windows, Green Spaces, Public Buildings, Community Events). We have used OpenAI's ClIP Model ([clip-vit-base-patch32](https://huggingface.co/openai/clip-vit-base-patch32)) for this classification task.
 
-2. **Summarization Model**: Generates concise summaries of user reports for each predefined category. These are especially useful when dealing with a large volume of reports. We have used OpenAI's ChatGPT-4o Large Language Model to summarize major concerns reported across the different reporting categories.
+2. **Summarization Model**: Generates concise summaries of user reports for each predefined category. These are especially useful when dealing with a large volume of reports. We have used OpenAI's GPT-3.5-Turbo Large Language Model to summarize major concerns reported across the different reporting categories.
 
 Within the scope of this hackathon, we have implemented a relatively simple AI-enhanced reporting app. A full investigation into how AI could support local communities would likely uncover many more opportunities to extend the functionality of this type of app.
 
