@@ -50,7 +50,12 @@ comments_per_month = df_filtered['comment'].resample('ME').count()
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader(f'Reports per Week ({selected_category})')
+    st.markdown(
+        f"""
+        <h3 style="text-align: center;">Reports per Week<br>({selected_category})</h3>
+        """,
+        unsafe_allow_html=True
+    )
     fig_week, ax_week = plt.subplots(figsize=(5, 3))
     ax_week.plot(
         comments_per_week.index, comments_per_week, 
@@ -63,7 +68,12 @@ with col1:
     st.pyplot(fig_week)
 
 with col2:
-    st.subheader(f'Reports per Month ({selected_category})')
+    st.markdown(
+        f"""
+        <h3 style="text-align: center;">Reports per Month<br>({selected_category})</h3>
+        """,
+        unsafe_allow_html=True
+    )
     fig_month, ax_month = plt.subplots(figsize=(5, 3))
     ax_month.plot(
         comments_per_month.index, comments_per_month, 
@@ -75,7 +85,7 @@ with col2:
     plt.tight_layout()
     st.pyplot(fig_month)
 
-# Display the DataFrame
+# Display the tracker DataFrame filtered by selected category
 st.write("")
 st.markdown("""
 <div style='text-align: center;'>

@@ -1,3 +1,13 @@
+
+
+# TO DO
+# 1. Dataset for the app. Needs various locations and time periods
+#  as well as good comments
+# 2. Revise README - install and pics
+# 3. Deploy to Streamlit Sharing - use AWS S3 for images and data
+
+
+
 """ I Love My Neighbourhood App. 
 
 This is a simple app designed to engage community members, public 

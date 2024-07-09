@@ -89,7 +89,6 @@ st.markdown("""
 
 st.divider()
 
-st.write("")
 st.write(
     """
     Use the button below to produce an AI generated summary of 

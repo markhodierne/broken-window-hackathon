@@ -33,27 +33,6 @@ categories = [
 ]
 
 
-def Xquery(payload):
-    st.write("Querying the API...")
-    response = requests.post(API_URL, headers=headers, json=payload)
-    
-    # Check if the request was successful (status code 200)
-    if response.status_code == 200:
-        st.write("API response received. Status Code:", response.status_code)
-        try:
-            json_data = response.json()
-            # Print or log the entire response content
-            st.write("Response Content:", response.content)
-            st.write("Response JSON:", json_data)
-            return json_data
-        except Exception as e:
-            st.write("Error decoding JSON:", e)
-            return None
-    else:
-        st.write(f"API request failed. Status Code: {response.status_code}")
-        return None
-    
-    
 def query(payload):
     response = requests.post(API_URL, headers=headers, json=payload)
     return response.json()
@@ -74,8 +53,26 @@ def save_uploaded_file(uploaded_file):
     file_extension = uploaded_file.name.split(".")[-1]
     file_name = f"{file_id}.{file_extension}"
     file_path = os.path.join(uploads_dir, file_name)
+    thumbnail_path = (
+        os.path.join(
+            uploads_dir, f"{file_id}_thumb.{file_extension}"
+        )
+    )
+    # Save original image
     with open(file_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
+
+    # Reset the file pointer to the beginning of the uploaded file
+    uploaded_file.seek(0)
+
+    # Create a BytesIO object to operate on a copy of the uploaded file
+    uploaded_file_copy = BytesIO(uploaded_file.read())
+    
+    # Create and save thumbnail image
+    image = Image.open(uploaded_file_copy)
+    image.thumbnail((100, 100))
+    image.save(thumbnail_path)
+
     return file_name
 
 
@@ -131,7 +128,6 @@ st.markdown(
 )
 
 st.divider()
-st.write("")
 st.write(
     """
     Report any issues in our neighbourhood by uploading a photo...
