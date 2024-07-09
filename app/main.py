@@ -60,22 +60,22 @@ st.session_state.openai_api_token = openai_api_token
 
 # Create pages
 upload_photo = st.Page(
-    "upload.py", 
+    "pages/upload.py", 
     title="Upload Photo", 
     icon="📸"
 )
 reports_location = st.Page(
-    "location.py", 
+    "pages/location.py", 
     title="Reports by Location", 
     icon="📍"
 )
 trend_analysis = st.Page(
-    "trends.py", 
+    "pages/trends.py", 
     title="Trend Analysis", 
     icon="📈"
 )
 summary_reports = st.Page(
-    "summary.py", 
+    "pages/summary.py", 
     title="Summary Reports", 
     icon="📝"
 )
