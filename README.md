@@ -28,11 +28,11 @@ Such data provides insights about local urban issues, and empowers residents to 
 
 [Click here to try the app](https://broken-window-hackathon-lyjk4hpgpyrweczmewadtk.streamlit.app/) or scan the QR code:  
 
-<img width="200" alt="QR Code" src="https://github.com/mhodierne1402/broken-window-hackathon/blob/main/assets/qr_code.png">
+<img width="200" alt="QR Code" src="https://github.com/mhodierne1402/broken-window-hackathon/blob/main/docs/images/qr_code.png">
 
 ## Architecture
 
-![App Architecture](https://github.com/mhodierne1402/broken-window-hackathon/blob/main/assets/architecture.png)
+![App Architecture](https://github.com/mhodierne1402/broken-window-hackathon/blob/main/docs/images/architecture.png)
 
 A number of apps for mapping and reporting street problems have already been created, such as [FixMyStreet](https://www.fixmystreet.com/). UK councils have also developed their own neighbourhood reporting apps, such as [Lewes and Eastbourne councils' "Report It"](https://www.lewes-eastbourne.gov.uk/report-it) smartphone app, a customized version of the [Love Clean Streets](https://lovecleanstreets.info/) environmental reporting service.
 
