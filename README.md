@@ -68,13 +68,14 @@ Within the scope of this hackathon, we have implemented a relatively simple AI-e
 
     ```pip install -r requirements.txt```
    
-3. Create a local .env file that contains your OpenAI API key:
+3. Create a local .env file that contains your OpenAI API key and your Hugging Face API token:
 
-    ```OPENAI_API_KEY=add-your-openai-api-key-here```
+    ```OPENAI_API_KEY=add-your-openai-api-key-here
+    HUGGING_FACE_API_TOKEN=add-your-hugging-face-api-token-here```
 
-4. Run the following command in the terminal to open the app in a new tab in your default browser:
+5. Run the following command in the terminal to open the app in a new tab in your default browser:
 
-    ```streamlit run home.py```
+    ```streamlit run main.py```
 
 **To deploy the app on Streamlit:**
 1. Fork or clone this repository.
