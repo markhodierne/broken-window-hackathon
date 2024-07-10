@@ -88,7 +88,7 @@ Within the scope of this hackathon, we have implemented a relatively simple AI-e
    
 2. Login to [Streamlit Hub](https://share.streamlit.io/).
    
-3. Click 'Create app' and complete the details to deploy from your GitHub repository. Specify 'Branch' as `master` and 'Main file path' as `hello.py`
+3. Click 'Create app' and complete the details to deploy from your GitHub repository. Specify 'Branch' as `master` and 'Main file path' as `main.py`
    
 5. Click 'Advanced settings...' and enter your OpenAI API key:
    
