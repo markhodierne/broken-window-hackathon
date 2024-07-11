@@ -12,41 +12,20 @@ services and policymakers in addressing key urban challenges:
 
 # Import the required libraries and modules
 import os
-import streamlit as st
+
 import boto3
+import streamlit as st
 from dotenv import load_dotenv
 
 
-# Uncomment when figuring out!!
-#s3_client = init_s3_client()
-#s3_bucket = st.secrets['AWS_S3_BUCKET']
-
-
-# Check if a "directory" exists
-def check_directory_exists(s3_client, bucket, prefix):
-    result = s3_client.list_objects_v2(Bucket=bucket, Prefix=prefix, Delimiter='/')
-    return 'Contents' in result
-
-
-# Create a "directory" by uploading a zero-byte object
-def create_directory(s3_client, bucket, prefix):
-    s3_client.put_object(Bucket=bucket, Key=f"{prefix}/")
-
-
-# Check if a file exists
-def check_file_exists(s3_client, bucket, key):
+def check_file_exists_on_s3(s3_client, bucket, key):
     try:
         s3_client.head_object(Bucket=bucket, Key=key)
         return True
-    except ClientError:
-        return False
+    except:
+        return False  
 
 
-# Upload a file to S3
-def upload_file(s3_client, bucket, key, file_obj):
-    s3_client.upload_fileobj(file_obj, bucket, key)
-    
-    
 def streamlit_deployment():
     st.session_state.hf_api_token = st.secrets['HUGGING_FACE_API_TOKEN']
     st.session_state.openai_api_token = st.secrets['OPENAI_API_KEY']
@@ -59,29 +38,20 @@ def streamlit_deployment():
         aws_secret_access_key=st.secrets['AWS_SECRET_ACCESS_KEY'],
         region_name=st.secrets['AWS_REGION']
     )
-    # Image directory setup
-    if not check_directory_exists(
-            st.session_state.s3_client, st.session_state.s3_bucket, 
-            uploads_dir):
-        
-        create_directory(
+    
+    # Image directory and data tracker setup
+    if not check_file_exists_on_s3(
             st.session_state.s3_client, 
             st.session_state.s3_bucket, 
-            uploads_dir
-        )
-    
-    # Data tracker setup
-    if not check_file_exists(
-            st.session_state.s3_client, st.session_state.s3_bucket, 
-            tracker_file):
-        
+            st.session_state.tracker_file):
+
         st.session_state.s3_client.put_object(
             Bucket=st.session_state.s3_bucket, 
-            Key=tracker_file, 
-            Body="""
-                image_path,classification,timestamp,latitude,longitude,
-                comment\n
-            """
+            Key=st.session_state.tracker_file, 
+            Body=(
+                "image_path,classification,timestamp,"
+                "latitude,longitude,comment\n"
+            )
         )
 
 
@@ -105,10 +75,9 @@ def local_deployment():
             )
 
 
-
-
-
 st.session_state.cloud = os.getenv('STREAMLIT_ENV') == 'streamlit'
+# REMOVE THIS ONCE IT ALL WORKS !!!!!!
+st.session_state.cloud = True
 
 if st.session_state.cloud:
     streamlit_deployment()
