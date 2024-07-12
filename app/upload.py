@@ -1,22 +1,24 @@
 # Import the required libraries and modules
-import os
-import uuid
 import base64
+import os
 import random
+import uuid
+from datetime import datetime
+from io import BytesIO
+
 import requests
 import streamlit as st
 from PIL import Image
-from io import BytesIO
-from datetime import datetime
 
 
 # Load the session state variables
 uploads_dir = st.session_state.uploads_dir
 tracker_file = st.session_state.tracker_file
-s3_bucket = st.session_state.s3_bucket
-s3_client = st.session_state.s3_client
 api_token = st.session_state.hf_api_token
 cloud = st.session_state.cloud
+if cloud:
+    s3_bucket = st.session_state.s3_bucket
+    s3_client = st.session_state.s3_client
 
 # Hugging Face Inference API URL for clip-vit-base-patch32
 API_URL = (
@@ -50,24 +52,6 @@ def get_location():
     return latitude, longitude
 
 
-def append_to_csv_s3(bucket_name, object_key, data):
-    try:
-        response = s3_client.get_object(Bucket=bucket_name, Key=object_key)
-        csv_content = response['Body'].read().decode('utf-8')
-        csv_content += ",".join(map(str, data)) + "\n"
-        s3_client.put_object(Bucket=bucket_name, Key=object_key, Body=csv_content)
-    except Exception as e:
-        st.write(f"Failed to append data to CSV on S3. Reason: {e}")
-        
-        
-def append_to_csv_local(file_path, data):
-    try:
-        with open(file_path, 'a') as f:
-            f.write(",".join(map(str, data)) + "\n")
-    except Exception as e:
-        st.write(f"Failed to append data to CSV locally. Reason: {e}")
-
-
 # Function to save uploaded file and return the file path
 def save_uploaded_file(uploaded_file):
     file_id = str(uuid.uuid4())
@@ -84,7 +68,7 @@ def save_uploaded_file(uploaded_file):
         s3_client.put_object(
             Bucket=bucket_name, 
             Key=file_path, 
-            Body=uploaded_file.getbuffer()
+            Body=uploaded_file.getvalue()
         )
         
         # Reset the file pointer to the beginning of the uploaded file
@@ -103,11 +87,10 @@ def save_uploaded_file(uploaded_file):
         thumbnail_buffer.seek(0)
         thumbnail_path = os.path.join(uploads_prefix, thumbnail_name)
         s3_client.put_object(Bucket=bucket_name, Key=thumbnail_path, Body=thumbnail_buffer)
-    
     else:
         # Local storage
-        file_path = os.path.join(uploads_prefix, file_name)
-        thumbnail_path = os.path.join(uploads_prefix, thumbnail_name)
+        file_path = os.path.join(uploads_dir, file_name)
+        thumbnail_path = os.path.join(uploads_dir, thumbnail_name)
         
         # Save original image locally
         with open(file_path, "wb") as f:
@@ -123,7 +106,6 @@ def save_uploaded_file(uploaded_file):
         image = Image.open(uploaded_file_copy)
         image.thumbnail((100, 100))
         image.save(thumbnail_path)
-        
     return file_name
 
 
@@ -131,17 +113,34 @@ def save_uploaded_file(uploaded_file):
 def save_image_data(
         image_path, classification, timestamp, 
         latitude, longitude, comment):
+    data = [
+        image_path, classification, timestamp, latitude, longitude, comment
+    ]
     
     if cloud:
-        append_to_csv_s3(
-            s3_bucket, tracker_file, 
-            [image_path, classification, timestamp, latitude, longitude, comment]
-        )
+        try:
+            response = s3_client.get_object(Bucket=s3_bucket, Key=tracker_file)
+            csv_content = response['Body'].read().decode('utf-8')
+            if not csv_content.endswith('\n'):
+                csv_content += '\n'
+            updated_csv_content = csv_content + ",".join(map(str, data)) + "\n"
+            s3_client.put_object(
+                Bucket=s3_bucket, Key=tracker_file, Body=updated_csv_content
+            )
+        except Exception as e:
+            st.write(f"Failed to append data to CSV on S3. Reason: {e}")
     else:
-        append_to_csv_local(
-            tracker_file, 
-            [image_path, classification, timestamp, latitude, longitude, comment]
-        )
+        try:
+            with open(st.session_state.tracker_file, 'a+') as f:
+                # Ensure the file ends with a newline character
+                f.seek(0, os.SEEK_END)
+                if f.tell() > 0:
+                    f.seek(f.tell() - 1)
+                    if f.read(1) != '\n':
+                        f.write('\n')
+                f.write(",".join(map(str, data)) + "\n")
+        except Exception as e:
+            st.write(f"Failed to append data to CSV locally. Reason: {e}")
     return
 
 
@@ -220,7 +219,8 @@ if submit_button:
         
         # Get classification, timestamp and location
         classification = classify_image(image, categories, threshold=0.5)
-        timestamp = datetime.now()
+        timestamp_raw = datetime.now()
+        timestamp = timestamp_raw.strftime("%Y-%m-%d %H:%M:%S")
         latitude, longitude = get_location()
         
         # Save the image metadata

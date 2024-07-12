@@ -1,12 +1,9 @@
-# Theme configuration
 [theme]
-# Base theme ("light" or "dark")
-base="dark"
 # Primary accent color for interactive elements.
-primaryColor="#287C34"
+primaryColor="#b1d4f0"
 # Background color for the main content area.
-backgroundColor="#EBFBEB"
+backgroundColor="#e9eef2"
 # Background color for sidebar and most interactive widgets.
-secondaryBackgroundColor="#DFF9DE"
+secondaryBackgroundColor="#b1d4f0"
 # Color used for almost all text.
 textColor="#000000"

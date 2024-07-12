@@ -1,29 +1,31 @@
 # Import the required libraries and modules
-import streamlit as st
-import pandas as pd
+from io import StringIO
+
 import matplotlib.pyplot as plt
+import pandas as pd
+import streamlit as st
 
 
 # Load the session state variables
 uploads_dir = st.session_state.uploads_dir
 tracker_file = st.session_state.tracker_file
-s3_bucket = st.session_state.s3_bucket
-s3_client = st.session_state.s3_client
 cloud = st.session_state.cloud
+if cloud:
+    s3_bucket = st.session_state.s3_bucket
+    s3_client = st.session_state.s3_client
 
-
-# Function to read CSV tracker file from S3
-def read_csv_from_s3(bucket_name, object_key):
-    try:
-        response = s3_client.get_object(Bucket=bucket_name, Key=object_key)
-        csv_content = response['Body'].read().decode('utf-8')
-        df = pd.read_csv(StringIO(csv_content))
-        return df
-    except Exception as e:
-        st.write(f"Failed to read CSV from S3. Reason: {e}")
-        return None
-
-
+    # Function to read CSV tracker file from S3
+    def read_csv_from_s3(bucket_name, object_key):
+        try:
+            response = s3_client.get_object(Bucket=bucket_name, Key=object_key)
+            csv_content = response['Body'].read().decode('utf-8')
+            df = pd.read_csv(StringIO(csv_content))
+            return df
+        except Exception as e:
+            st.write(f"Failed to read CSV from S3. Reason: {e}")
+            return None
+        
+        
 st.markdown(
     """
     <div style='text-align: center;'>
@@ -40,7 +42,6 @@ if cloud:
     df = read_csv_from_s3(s3_bucket, tracker_file)  
 else:
     df = pd.read_csv(tracker_file)
-df.set_index('timestamp', inplace=True) 
 
 # Convert timestamp to datetime without specifying a format
 df['timestamp'] = pd.to_datetime(df['timestamp'], errors='coerce')

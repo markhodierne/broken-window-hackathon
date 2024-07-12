@@ -1,31 +1,43 @@
 # Import the required libraries and modules
 import os
 import base64
+from io import StringIO
+
 import pandas as pd
 import pydeck as pdk
 import streamlit as st
-from PIL import Image
+#from PIL import Image
 
 images_dir = 'images'
 
 # Load the session state variables
 uploads_dir = st.session_state.uploads_dir
 tracker_file = st.session_state.tracker_file
-s3_bucket = st.session_state.s3_bucket
-s3_client = st.session_state.s3_client
 cloud = st.session_state.cloud
+if cloud:
+    s3_bucket = st.session_state.s3_bucket
+    s3_client = st.session_state.s3_client
 
-
-# Function to read CSV tracker file from S3
-def read_csv_from_s3(bucket_name, object_key):
-    try:
-        response = s3_client.get_object(Bucket=bucket_name, Key=object_key)
-        csv_content = response['Body'].read().decode('utf-8')
-        df = pd.read_csv(StringIO(csv_content))
-        return df
-    except Exception as e:
-        st.write(f"Failed to read CSV from S3. Reason: {e}")
-        return None
+    # Function to read CSV tracker file from S3
+    def read_csv_from_s3(bucket_name, object_key):
+        try:
+            response = s3_client.get_object(Bucket=bucket_name, Key=object_key)
+            csv_content = response['Body'].read().decode('utf-8')
+            df = pd.read_csv(StringIO(csv_content))
+            return df
+        except Exception as e:
+            st.write(f"Failed to read CSV from S3. Reason: {e}")
+            return None
+        
+    # Function to download image from S3 and convert to base64
+    def get_base64_from_s3(bucket_name, key):
+        try:
+            response = s3_client.get_object(Bucket=bucket_name, Key=key)
+            image = response['Body'].read()
+            return base64.b64encode(image).decode()
+        except Exception as e:
+            st.write(f"Failed to read image from S3. Reason: {e}")
+            return None
 
 
 # Function to format the thumbnail path
@@ -69,7 +81,11 @@ current_latitude, current_longitude = 51.472, -0.0681
 map_df = df[['image_path', 'classification', 'latitude', 'longitude', 'comment']].copy()
 map_df.columns = ['thumbnail', 'category', 'lat', 'lon', 'comment']
 map_df['thumbnail'] = map_df['thumbnail'].apply(lambda x: get_thumb_path(x, uploads_dir))
-map_df['thumbnail'] = map_df['thumbnail'].apply(get_base64)
+
+if cloud:
+    map_df['thumbnail'] = map_df['thumbnail'].apply(lambda x: get_base64_from_s3(s3_bucket, x))
+else:
+    map_df['thumbnail'] = map_df['thumbnail'].apply(get_base64)
 
 # Apply formatting to 'category' and 'comment' columns
 map_df['category'] = map_df['category'].apply(lambda x: f"(Category: {x})")

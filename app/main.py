@@ -76,8 +76,6 @@ def local_deployment():
 
 
 st.session_state.cloud = os.getenv('STREAMLIT_ENV') == 'streamlit'
-# REMOVE THIS ONCE IT ALL WORKS !!!!!!
-st.session_state.cloud = True
 
 if st.session_state.cloud:
     streamlit_deployment()
