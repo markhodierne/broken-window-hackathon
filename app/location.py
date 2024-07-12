@@ -6,15 +6,26 @@ import pydeck as pdk
 import streamlit as st
 from PIL import Image
 
+images_dir = 'images'
 
 # Load the session state variables
 uploads_dir = st.session_state.uploads_dir
 tracker_file = st.session_state.tracker_file
-images_dir = 'images'
+s3_bucket = st.session_state.s3_bucket
+s3_client = st.session_state.s3_client
+cloud = st.session_state.cloud
 
-# Load the tracker
-df = pd.read_csv(tracker_file)
-df.set_index('timestamp', inplace=True)
+
+# Function to read CSV tracker file from S3
+def read_csv_from_s3(bucket_name, object_key):
+    try:
+        response = s3_client.get_object(Bucket=bucket_name, Key=object_key)
+        csv_content = response['Body'].read().decode('utf-8')
+        df = pd.read_csv(StringIO(csv_content))
+        return df
+    except Exception as e:
+        st.write(f"Failed to read CSV from S3. Reason: {e}")
+        return None
 
 
 # Function to format the thumbnail path
@@ -24,11 +35,20 @@ def get_thumb_path(filename, dir):
     thumb_filename = f"{name}_thumb.{ext}"
     return os.path.join(dir, thumb_filename)
     
+    
 # Function to format image as base64
 def get_base64(file_path):
     with open(file_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode()
     
+
+# Load the tracker into a DataFrame
+if cloud:
+    df = read_csv_from_s3(s3_bucket, tracker_file)  
+else:
+    df = pd.read_csv(tracker_file)
+df.set_index('timestamp', inplace=True) 
+
 
 st.markdown(
     """

@@ -13,8 +13,10 @@ from datetime import datetime
 # Load the session state variables
 uploads_dir = st.session_state.uploads_dir
 tracker_file = st.session_state.tracker_file
+s3_bucket = st.session_state.s3_bucket
+s3_client = st.session_state.s3_client
 api_token = st.session_state.hf_api_token
-#cloud = st.session_state.cloud
+cloud = st.session_state.cloud
 
 # Hugging Face Inference API URL for clip-vit-base-patch32
 API_URL = (
@@ -48,32 +50,80 @@ def get_location():
     return latitude, longitude
 
 
+def append_to_csv_s3(bucket_name, object_key, data):
+    try:
+        response = s3_client.get_object(Bucket=bucket_name, Key=object_key)
+        csv_content = response['Body'].read().decode('utf-8')
+        csv_content += ",".join(map(str, data)) + "\n"
+        s3_client.put_object(Bucket=bucket_name, Key=object_key, Body=csv_content)
+    except Exception as e:
+        st.write(f"Failed to append data to CSV on S3. Reason: {e}")
+        
+        
+def append_to_csv_local(file_path, data):
+    try:
+        with open(file_path, 'a') as f:
+            f.write(",".join(map(str, data)) + "\n")
+    except Exception as e:
+        st.write(f"Failed to append data to CSV locally. Reason: {e}")
+
+
 # Function to save uploaded file and return the file path
 def save_uploaded_file(uploaded_file):
     file_id = str(uuid.uuid4())
     file_extension = uploaded_file.name.split(".")[-1]
     file_name = f"{file_id}.{file_extension}"
-    file_path = os.path.join(uploads_dir, file_name)
-    thumbnail_path = (
-        os.path.join(
-            uploads_dir, f"{file_id}_thumb.{file_extension}"
-        )
-    )
-    # Save original image
-    with open(file_path, "wb") as f:
-        f.write(uploaded_file.getbuffer())
-
-    # Reset the file pointer to the beginning of the uploaded file
-    uploaded_file.seek(0)
-
-    # Create a BytesIO object to operate on a copy of the uploaded file
-    uploaded_file_copy = BytesIO(uploaded_file.read())
+    thumbnail_name = f"{file_id}_thumb.{file_extension}"
     
-    # Create and save thumbnail image
-    image = Image.open(uploaded_file_copy)
-    image.thumbnail((100, 100))
-    image.save(thumbnail_path)
-
+    if cloud:
+        bucket_name = st.session_state.s3_bucket
+        uploads_prefix = st.session_state.uploads_dir
+        
+        # Save original image to S3
+        file_path = os.path.join(uploads_prefix, file_name)
+        s3_client.put_object(
+            Bucket=bucket_name, 
+            Key=file_path, 
+            Body=uploaded_file.getbuffer()
+        )
+        
+        # Reset the file pointer to the beginning of the uploaded file
+        uploaded_file.seek(0)
+        
+        # Create a BytesIO object to operate on a copy of the uploaded file
+        uploaded_file_copy = BytesIO(uploaded_file.read())
+        
+        # Create and save thumbnail image
+        image = Image.open(uploaded_file_copy)
+        image.thumbnail((100, 100))
+        thumbnail_buffer = BytesIO()
+        image.save(thumbnail_buffer, format=image.format)
+        
+        # Save the thumbnail to S3
+        thumbnail_buffer.seek(0)
+        thumbnail_path = os.path.join(uploads_prefix, thumbnail_name)
+        s3_client.put_object(Bucket=bucket_name, Key=thumbnail_path, Body=thumbnail_buffer)
+    
+    else:
+        # Local storage
+        file_path = os.path.join(uploads_prefix, file_name)
+        thumbnail_path = os.path.join(uploads_prefix, thumbnail_name)
+        
+        # Save original image locally
+        with open(file_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        
+        # Reset the file pointer to the beginning of the uploaded file
+        uploaded_file.seek(0)
+        
+        # Create a BytesIO object to operate on a copy of the uploaded file
+        uploaded_file_copy = BytesIO(uploaded_file.read())
+        
+        # Create and save thumbnail image
+        image = Image.open(uploaded_file_copy)
+        image.thumbnail((100, 100))
+        image.save(thumbnail_path)
+        
     return file_name
 
 
@@ -82,10 +132,15 @@ def save_image_data(
         image_path, classification, timestamp, 
         latitude, longitude, comment):
     
-    with open(tracker_file, 'a') as f:
-        f.write(
-            f"{image_path},{classification},{timestamp},"
-            f"{latitude},{longitude},{comment}\n"
+    if cloud:
+        append_to_csv_s3(
+            s3_bucket, tracker_file, 
+            [image_path, classification, timestamp, latitude, longitude, comment]
+        )
+    else:
+        append_to_csv_local(
+            tracker_file, 
+            [image_path, classification, timestamp, latitude, longitude, comment]
         )
     return
 
