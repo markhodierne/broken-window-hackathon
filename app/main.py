@@ -56,7 +56,6 @@ def streamlit_deployment():
 
 
 def local_deployment():
-    load_dotenv()
     st.session_state.hf_api_token = os.getenv('HUGGING_FACE_API_TOKEN')
     st.session_state.openai_api_token = os.getenv('OPENAI_API_KEY')
     st.session_state.uploads_dir = "uploads"
@@ -75,8 +74,11 @@ def local_deployment():
             )
 
 
-#st.session_state.cloud = os.getenv('STREAMLIT_ENV') == 'streamlit'
-st.session_state.cloud = True
+load_dotenv()
+db_username = os.environ["STREAMLIT_ENV"]
+st.write(f"Streamlit deployment: {db_username}")
+st.session_state.cloud = os.getenv('STREAMLIT_ENV') == 'streamlit'
+st.write(f"Streamlit deployment: {st.session_state.cloud}")
 
 if st.session_state.cloud:
     streamlit_deployment()
