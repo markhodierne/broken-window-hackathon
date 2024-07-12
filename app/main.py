@@ -76,7 +76,7 @@ def local_deployment():
 
 
 #st.session_state.cloud = os.getenv('STREAMLIT_ENV') == 'streamlit'
-st.session_state.cloud = True
+st.session_state.cloud = False
 
 if st.session_state.cloud:
     streamlit_deployment()
