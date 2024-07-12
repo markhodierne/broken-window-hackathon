@@ -75,10 +75,7 @@ def local_deployment():
 
 
 load_dotenv()
-db_username = os.environ["STREAMLIT_ENV"]
-st.write(f"Streamlit deployment: {db_username}")
-st.session_state.cloud = os.getenv('STREAMLIT_ENV') == 'streamlit'
-st.write(f"Streamlit deployment: {st.session_state.cloud}")
+st.session_state.cloud = os.getenv('STREAMLIT_ENV') == 'streamlit_cloud'
 
 if st.session_state.cloud:
     streamlit_deployment()
