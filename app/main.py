@@ -17,6 +17,9 @@ import boto3
 import streamlit as st
 from dotenv import load_dotenv
 
+load_dotenv()
+st.session_state.cloud = os.getenv('STREAMLIT_ENV') == 'streamlit-cloud'
+
 
 def check_file_exists_on_s3(s3_client, bucket, key):
     try:
@@ -73,9 +76,6 @@ def local_deployment():
                 "latitude,longitude,comment\n"
             )
 
-
-load_dotenv()
-st.session_state.cloud = os.getenv('STREAMLIT_ENV') == 'streamlit-cloud'
 
 if st.session_state.cloud:
     streamlit_deployment()
