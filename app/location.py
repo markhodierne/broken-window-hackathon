@@ -91,7 +91,11 @@ map_df['category'] = map_df['category'].apply(lambda x: f"(Category: {x})")
 
 # Add the user's location to the map data
 user_icon_path = os.path.join(images_dir, 'user_icon.png')
-user_icon_base64 = get_base64(user_icon_path)
+if cloud:
+    user_icon_base64 = get_base64_from_s3(s3_bucket, user_icon_path)
+else:
+    user_icon_base64 = get_base64(user_icon_path)
+    
 
 user_location = pd.DataFrame(
     {'thumbnail': [user_icon_base64],
