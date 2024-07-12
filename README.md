@@ -26,7 +26,7 @@ Users are able to submit photos and/or comments about their local neighbourhood 
 
 Such data provides insights about local urban issues, and empowers residents to work effectively with public services and voluntary bodies to make improvements. The data also helps policymakers to see the bigger picture, helping them decide which problems are critical, and allocate resources accordingly.This is Broken Window Theory in action ... grass roots fashion.
 
-[Click here to try the app](https://broken-window-hackathon-lyjk4hpgpyrweczmewadtk.streamlit.app/) or scan the QR code:  
+[Click here to try the app](https://neighbourhood-tracker.streamlit.app/location) or scan the QR code:  
 
 <img width="200" alt="QR Code" src="https://github.com/mhodierne1402/broken-window-hackathon/blob/main/docs/images/qr_code.png">
 
@@ -38,7 +38,7 @@ A number of apps for mapping and reporting street problems have already been cre
 
 Although such apps have demonstrated some success, they are somewhat limited in that they are simply one-way reporting channels for local residents. "I Love My Neighbourhood" demonstrates that this data, together with the capabilities of AI, can help to empower a local residents to actively monitor and improve their neighbourhoods. 
 
-The app utilizes on two AI models to enhance its functionality:
+The app utilizes two AI models to enhance its functionality:
 
 1. **Classification Model**: Automatically categorizes user reports into predefined categories (e.g., Graffiti, Garbage, Broken Windows, Green Spaces, Public Buildings, Community Events). We have used OpenAI's ClIP Model ([clip-vit-base-patch32](https://huggingface.co/openai/clip-vit-base-patch32)) for this classification task.
 
@@ -70,9 +70,10 @@ Within the scope of this hackathon, we have implemented a relatively simple AI-e
     pip install -r requirements.txt
     ```
    
-4. Create a local .env file that contains your OpenAI API key and your Hugging Face API token:
+4. Create a local .env file that contains your local environment variables:
 
     ```
+    STREAMLIT_ENV=local
     OPENAI_API_KEY=add-your-openai-api-key-here
     HUGGING_FACE_API_TOKEN=add-your-hugging-face-api-token-here
     ```
@@ -80,7 +81,7 @@ Within the scope of this hackathon, we have implemented a relatively simple AI-e
 5. Run the following command in the terminal to open the app in a new tab in your default browser:
 
     ```
-    streamlit run main.py
+    streamlit run app/main.py
     ```
 
 **To deploy the app on Streamlit:**
@@ -88,15 +89,21 @@ Within the scope of this hackathon, we have implemented a relatively simple AI-e
    
 2. Login to [Streamlit Hub](https://share.streamlit.io/).
    
-3. Click 'Create app' and complete the details to deploy from your GitHub repository. Specify 'Branch' as `master` and 'Main file path' as `main.py`
+3. Click 'Create app' and complete the details to deploy from your GitHub repository. Specify 'Branch' as `master` and 'Main file path' as `app/main.py`
    
-5. Click 'Advanced settings...' and enter your OpenAI API key:
+4. Click 'Advanced settings...' and enter your environment variables:
    
     ```
-    OPENAI_API_KEY=add-your-openai-api-key-here
+    STREAMLIT_ENV = "streamlit-cloud"
+    OPENAI_API_KEY = "add-your-openai-api-key-here"
+    HUGGING_FACE_API_TOKEN = "add-your-hugging-face-api-token-here"
+    AWS_S3_BUCKET = "add-your-aws-s3-bucket-here"
+    AWS_ACCESS_KEY_ID = "add-your-aws-access-key-id-here"
+    AWS_SECRET_ACCESS_KEY = "add-your-aws-secret-access-key-here"
+    AWS_REGION = "add-your-aws-region-here"
     ```
 
-7. Click 'Deploy!'
+5. Click 'Deploy!'
 
 ## License
 [MIT License](LICENSE)  
