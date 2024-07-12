@@ -6,7 +6,6 @@ from io import StringIO
 import pandas as pd
 import pydeck as pdk
 import streamlit as st
-#from PIL import Image
 
 images_dir = 'images'
 
