@@ -1,0 +1,9 @@
+boto3
+matplotlib
+openai
+pandas
+Pillow==10.4.0
+pydeck
+dotenv
+requests
+streamlit
