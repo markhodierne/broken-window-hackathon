@@ -1,4 +1,3 @@
-# NOTE ABOUT MAP REFS
 # Broken Window Hackathon #1
 ### Hosted by FutureLondon.org:
 "[Future London](https://futurelondon.org/) is a community of high-agency techno-optimists. We believe that the UK is broken. But it doesn't have to be."
@@ -45,7 +44,7 @@ The app utilizes two AI models to enhance its functionality:
 
 2. **Summarization Model**: Generates concise summaries of user reports for each predefined category. These are especially useful when dealing with a large volume of reports. We have used OpenAI's GPT-3.5-Turbo Large Language Model to summarize major concerns reported across the different reporting categories.
 
-Within the scope of this hackathon, we have implemented a relatively simple AI-enhanced reporting app. A full investigation into how AI could support local communities would likely uncover many more opportunities to extend the functionality of this type of app.
+Within the scope of this hackathon, we have implemented a relatively simple AI-enhanced reporting app. A full investigation into how AI could support local communities would likely uncover many more opportunities to extend the functionality of this type of app. (Note: geo mapping has not been implemented in this app; all map locations have been randomly assigned within a fixed local area of South East London.) 
 
 ## Usage
 
