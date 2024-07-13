@@ -38,9 +38,23 @@ categories = [
 ]
 
 
-def query(payload):
+def xxquery(payload):
     response = requests.post(API_URL, headers=headers, json=payload)
     return response.json()
+
+
+def query(payload):
+    try:
+        response = requests.post(API_URL, headers=headers, json=payload)
+        response.raise_for_status()  # Raise HTTPError for bad responses
+        if response.status_code == 200 and response.text:
+            return response.json()
+        else:
+            st.write("Unexpected response format or empty response")
+            return None
+    except requests.exceptions.RequestException as e:
+        st.write(f"Request failed: {e}")
+        return None
 
 
 # Function to get user's location based browser geolocation
