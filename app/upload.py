@@ -182,7 +182,8 @@ def classify_image(image, categories, threshold=0.5):
         max_score = max(scores)
         if max_score >= threshold:
             predicted_category = labels[scores.index(max_score)]
-
+    else:
+        st.write("Failed to classify image or no valid response from API.")
     return predicted_category
         
 
