@@ -38,23 +38,9 @@ categories = [
 ]
 
 
-def xxquery(payload):
+def query(payload):
     response = requests.post(API_URL, headers=headers, json=payload)
     return response.json()
-
-
-def query(payload):
-    try:
-        response = requests.post(API_URL, headers=headers, json=payload)
-        response.raise_for_status()  # Raise HTTPError for bad responses
-        if response.status_code == 200 and response.text:
-            return response.json()
-        else:
-            st.write("Unexpected response format or empty response")
-            return None
-    except requests.exceptions.RequestException as e:
-        st.write(f"Request failed: {e}")
-        return None
 
 
 # Function to get user's location based browser geolocation
@@ -71,56 +57,49 @@ def save_uploaded_file(uploaded_file):
     file_id = str(uuid.uuid4())
     file_extension = uploaded_file.name.split(".")[-1]
     file_name = f"{file_id}.{file_extension}"
-    thumbnail_name = f"{file_id}_thumb.{file_extension}"
+    
+    # Create a BytesIO object to operate on a copy of the uploaded file
+    uploaded_file_copy = BytesIO(uploaded_file.read())
+
+    # Open the uploaded image
+    image = Image.open(uploaded_file_copy)
+
+    # Resize the image
+    smallest_dimension = 300
+    original_width, original_height = image.size
+    
+    if original_width < original_height:
+        new_width = smallest_dimension
+        new_height = int((smallest_dimension / original_width) * original_height)
+    else:
+        new_height = smallest_dimension
+        new_width = int((smallest_dimension / original_height) * original_width)
+        
+    resized_image = image.resize((new_width, new_height), Image.LANCZOS)
     
     if cloud:
         bucket_name = st.session_state.s3_bucket
         uploads_prefix = st.session_state.uploads_dir
         
-        # Save original image to S3
+        # Save resized image to S3
+        resized_buffer = BytesIO()
+        resized_image.save(resized_buffer, format=image.format)
+        resized_buffer.seek(0)
         file_path = os.path.join(uploads_prefix, file_name)
         s3_client.put_object(
             Bucket=bucket_name, 
             Key=file_path, 
-            Body=uploaded_file.getvalue()
+            Body=resized_buffer
         )
-        
-        # Reset the file pointer to the beginning of the uploaded file
-        uploaded_file.seek(0)
-        
-        # Create a BytesIO object to operate on a copy of the uploaded file
-        uploaded_file_copy = BytesIO(uploaded_file.read())
-        
-        # Create and save thumbnail image
-        image = Image.open(uploaded_file_copy)
-        image.thumbnail((100, 100))
-        thumbnail_buffer = BytesIO()
-        image.save(thumbnail_buffer, format=image.format)
-        
-        # Save the thumbnail to S3
-        thumbnail_buffer.seek(0)
-        thumbnail_path = os.path.join(uploads_prefix, thumbnail_name)
-        s3_client.put_object(Bucket=bucket_name, Key=thumbnail_path, Body=thumbnail_buffer)
     else:
-        # Local storage
+        # Save resized image to local storage
+        resized_buffer = BytesIO()
+        resized_image.save(resized_buffer, format=image.format)
         file_path = os.path.join(uploads_dir, file_name)
-        thumbnail_path = os.path.join(uploads_dir, thumbnail_name)
-        
-        # Save original image locally
         with open(file_path, "wb") as f:
-            f.write(uploaded_file.getbuffer())
+            f.write(resized_buffer.getvalue())
         
-        # Reset the file pointer to the beginning of the uploaded file
-        uploaded_file.seek(0)
-        
-        # Create a BytesIO object to operate on a copy of the uploaded file
-        uploaded_file_copy = BytesIO(uploaded_file.read())
-        
-        # Create and save thumbnail image
-        image = Image.open(uploaded_file_copy)
-        image.thumbnail((100, 100))
-        image.save(thumbnail_path)
-    return file_name
+    return file_name, resized_image
 
 
 # Function to save image data to tracker
@@ -226,14 +205,11 @@ if submit_button:
         # Display the comment and the image
         st.write(f'Submitting your report...')
         
-        # Open the uploaded image
-        image = Image.open(uploaded_image)
-        
         # Save the image
-        image_path = save_uploaded_file(uploaded_image)
+        image_path, resized_image = save_uploaded_file(uploaded_image)
         
         # Get classification, timestamp and location
-        classification = classify_image(image, categories, threshold=0.5)
+        classification = classify_image(resized_image, categories, threshold=0.5)
         timestamp_raw = datetime.now()
         timestamp = timestamp_raw.strftime("%Y-%m-%d %H:%M:%S")
         latitude, longitude = get_location()
@@ -246,25 +222,6 @@ if submit_button:
         )
 
         st.write(f'Successful submission. Thank you for your report!')
-        
-        # Calculate the new size while maintaining the aspect ratio
-        smallest_dimension = 300
-        original_width, original_height = image.size
-        if original_width < original_height:
-            new_width = smallest_dimension
-            new_height = int(
-                (smallest_dimension / original_width) 
-                * original_height
-            )
-        else:
-            new_height = smallest_dimension
-            new_width = int(
-                (smallest_dimension / original_height) 
-                * original_width
-            )
-            
-        # Resize the image
-        resized_image = image.resize((new_width, new_height), Image.LANCZOS)
 
         # Display the resized image
         st.image(resized_image, caption='', use_column_width=False)

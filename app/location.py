@@ -13,6 +13,7 @@ images_dir = 'images'
 uploads_dir = st.session_state.uploads_dir
 tracker_file = st.session_state.tracker_file
 cloud = st.session_state.cloud
+
 if cloud:
     s3_bucket = st.session_state.s3_bucket
     s3_client = st.session_state.s3_client
@@ -39,14 +40,6 @@ if cloud:
             return None
 
 
-# Function to format the thumbnail path
-def get_thumb_path(filename, dir):
-    base_filename = os.path.basename(filename)
-    name, ext = base_filename.rsplit('.', 1)
-    thumb_filename = f"{name}_thumb.{ext}"
-    return os.path.join(dir, thumb_filename)
-    
-    
 # Function to format image as base64
 def get_base64(file_path):
     with open(file_path, "rb") as image_file:
@@ -78,16 +71,15 @@ current_latitude, current_longitude = 51.472, -0.0681
 
 # Create a new DataFrame for the map
 map_df = df[['image_path', 'classification', 'latitude', 'longitude', 'comment']].copy()
-map_df.columns = ['thumbnail', 'category', 'lat', 'lon', 'comment']
-map_df['thumbnail'] = map_df['thumbnail'].apply(lambda x: get_thumb_path(x, uploads_dir))
+map_df['image_path'] = map_df['image_path'].apply(lambda x: os.path.join(uploads_dir, x))
 
 if cloud:
-    map_df['thumbnail'] = map_df['thumbnail'].apply(lambda x: get_base64_from_s3(s3_bucket, x))
+    map_df['image_path'] = map_df['image_path'].apply(lambda x: get_base64_from_s3(s3_bucket, x))
 else:
-    map_df['thumbnail'] = map_df['thumbnail'].apply(get_base64)
+    map_df['image_path'] = map_df['image_path'].apply(get_base64)
 
-# Apply formatting to 'category' and 'comment' columns
-map_df['category'] = map_df['category'].apply(lambda x: f"(Category: {x})")
+# Apply formatting to 'classification' and 'comment' columns
+map_df['classification'] = map_df['classification'].apply(lambda x: f"(classification: {x})")
 
 # Add the user's location to the map data
 user_icon_path = os.path.join(images_dir, 'user_icon.png')
@@ -98,10 +90,10 @@ else:
     
 
 user_location = pd.DataFrame(
-    {'thumbnail': [user_icon_base64],
-    'category': ["😀 😀 😀"], 
-    'lat': [current_latitude], 
-    'lon': [current_longitude],
+    {'image_path': [user_icon_base64],
+    'classification': ["😀 😀 😀"], 
+    'latitude': [current_latitude], 
+    'longitude': [current_longitude],
     'comment': ['This is your current location']
     }
 )
@@ -109,8 +101,8 @@ user_location = pd.DataFrame(
 # Display the map using pydeck
 tooltip_html = '''
     <div style="text-align: center;">
-        <img src="data:image/jpeg;base64,{thumbnail}" style="max-width: 100px; 
-        max-height: 100px;"><br><b>{comment}</b><br>{category}
+        <img src="data:image/jpeg;base64,{image_path}" style="max-width: 100px; 
+        max-height: 100px;"><br><b>{comment}</b><br>{classification}
     </div>
 '''
 tooltip = {
@@ -127,7 +119,7 @@ tooltip = {
 map_layer = pdk.Layer(
     'ScatterplotLayer',
     data=map_df,
-    get_position='[lon, lat]',
+    get_position='[longitude, latitude]',
     get_fill_color='[200, 30, 0, 160]',  # Red for user reports
     get_radius=20,
     pickable=True,
@@ -137,7 +129,7 @@ map_layer = pdk.Layer(
 user_layer = pdk.Layer(
     'ScatterplotLayer',
     data=user_location,
-    get_position='[lon, lat]',
+    get_position='[longitude, latitude]',
     get_fill_color='[0, 0, 255, 160]',  # Blue for user location
     get_radius=30,  # Larger radius for user location marker
     pickable=True,
