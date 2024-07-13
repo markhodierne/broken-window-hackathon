@@ -257,7 +257,7 @@ if submit_button:
         # Use st.write with HTML for multi-line success message
         st.write(
             f"""
-            <div style="background-color:#E6FAE4;
+            <div style="background-color:#b1d4f0;
             padding:10px;border-radius:5px">
             Photo Category:  {classification}<br>
             Comment:  {comment}<br>

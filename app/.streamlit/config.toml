@@ -7,3 +7,4 @@ backgroundColor="#e9eef2"
 secondaryBackgroundColor="#b1d4f0"
 # Color used for almost all text.
 textColor="#000000"
+font="sans serif"
