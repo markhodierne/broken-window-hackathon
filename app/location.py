@@ -1,11 +1,22 @@
-# Import the required libraries and modules
+"""
+Reports by Location page for 'I Love My Neighbourhood' App.
+
+Functions:
+- Load and display residents' reports from a tracker file.
+- Display the reports on a map.
+- Display the tracker DataFrame.
+
+Data is stored locally for local deployment and on AWS S3 for 
+Streamlit Cloud deployment.
+"""
+
 import os
-import base64
-from io import StringIO
 
 import pandas as pd
 import pydeck as pdk
 import streamlit as st
+
+from utils import load_tracker_data, get_base64
 
 images_dir = 'images'
 
@@ -17,47 +28,20 @@ cloud = st.session_state.cloud
 if cloud:
     s3_bucket = st.session_state.s3_bucket
     s3_client = st.session_state.s3_client
+else:
+    s3_bucket = None
+    s3_client = None
 
-    # Function to read CSV tracker file from S3
-    def read_csv_from_s3(bucket_name, object_key):
-        try:
-            response = s3_client.get_object(Bucket=bucket_name, Key=object_key)
-            csv_content = response['Body'].read().decode('utf-8')
-            df = pd.read_csv(StringIO(csv_content))
-            return df
-        except Exception as e:
-            st.write(f"Failed to read CSV from S3. Reason: {e}")
-            return None
-        
-    # Function to download image from S3 and convert to base64
-    def get_base64_from_s3(bucket_name, key):
-        try:
-            response = s3_client.get_object(Bucket=bucket_name, Key=key)
-            image = response['Body'].read()
-            return base64.b64encode(image).decode()
-        except Exception as e:
-            st.write(f"Failed to read image from S3. Reason: {e}")
-            return None
-
-
-# Function to format image as base64
-def get_base64(file_path):
-    with open(file_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode()
-    
 
 # Load the tracker into a DataFrame
-if cloud:
-    df = read_csv_from_s3(s3_bucket, tracker_file)  
-else:
-    df = pd.read_csv(tracker_file)
+df = load_tracker_data(tracker_file, cloud, s3_client, s3_bucket)  
 df.set_index('timestamp', inplace=True) 
 
 
 st.markdown(
     """
     <div style='text-align: center;'>
-    <h1>Reports by Location</h1>
+        <h1>Reports by Location</h1>
     </div>
     """, 
     unsafe_allow_html=True
@@ -70,33 +54,29 @@ st.divider()
 current_latitude, current_longitude = 51.472, -0.0681
 
 # Create a new DataFrame for the map
-map_df = df[['image_path', 'classification', 'latitude', 'longitude', 'comment']].copy()
-map_df['image_path'] = map_df['image_path'].apply(lambda x: os.path.join(uploads_dir, x))
-
-if cloud:
-    map_df['image_path'] = map_df['image_path'].apply(lambda x: get_base64_from_s3(s3_bucket, x))
-else:
-    map_df['image_path'] = map_df['image_path'].apply(get_base64)
-
-# Apply formatting to 'classification' and 'comment' columns
-map_df['classification'] = map_df['classification'].apply(lambda x: f"(classification: {x})")
+map_df = df[
+    ['image_path', 'classification', 'latitude', 'longitude', 'comment']
+].copy()
+map_df['image_path'] = map_df['image_path'].apply(
+    lambda x: os.path.join(uploads_dir, x)
+)
+map_df['image_path'] = map_df['image_path'].apply(
+    lambda x: get_base64(x, cloud, s3_client, s3_bucket)
+)
+map_df['classification'] = map_df['classification'].apply(
+    lambda x: f"(classification: {x})"
+)
 
 # Add the user's location to the map data
 user_icon_path = os.path.join(images_dir, 'user_icon.png')
-if cloud:
-    user_icon_base64 = get_base64_from_s3(s3_bucket, user_icon_path)
-else:
-    user_icon_base64 = get_base64(user_icon_path)
-    
-
-user_location = pd.DataFrame(
-    {'image_path': [user_icon_base64],
+user_icon_base64 = get_base64(user_icon_path, cloud, s3_client, s3_bucket)
+user_location = pd.DataFrame({
+    'image_path': [user_icon_base64],
     'classification': ["😀 😀 😀"], 
     'latitude': [current_latitude], 
     'longitude': [current_longitude],
     'comment': ['This is your current location']
-    }
-)
+})
 
 # Display the map using pydeck
 tooltip_html = '''

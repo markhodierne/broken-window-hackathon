@@ -1,9 +1,20 @@
-# Import the required libraries and modules
-from io import StringIO
+"""
+Summary Reports page for 'I Love My Neighbourhood' App.
+
+Functions:
+- Load and display residents' reports from a tracker file.
+- Summarize comments by category using OpenAI's GPT-3.5-Turbo model.
+- Display the summarized reports and the original reports.
+
+Data is stored locally for local deployment and on AWS S3 for 
+Streamlit Cloud deployment.
+"""
 
 import streamlit as st
 import pandas as pd
 from openai import OpenAI
+
+from utils import load_tracker_data
 
 
 # Load the session state variables
@@ -15,26 +26,25 @@ cloud = st.session_state.cloud
 if cloud:
     s3_bucket = st.session_state.s3_bucket
     s3_client = st.session_state.s3_client
-    
-    # Function to read CSV tracker file from S3
-    def read_csv_from_s3(bucket_name, object_key):
-        try:
-            response = s3_client.get_object(Bucket=bucket_name, Key=object_key)
-            csv_content = response['Body'].read().decode('utf-8')
-            df = pd.read_csv(StringIO(csv_content))
-            return df
-        except Exception as e:
-            st.write(f"Failed to read CSV from S3. Reason: {e}")
-            return None
-
+else:
+    s3_bucket = None
+    s3_client = None
 
 
 # Initialize the client
 client = OpenAI(api_key=api_token)
 
 
-# Function to summarize comments
 def summarize_comments(df):
+    """
+    Summarize comments by category using OpenAI's GPT-3.5-Turbo model.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the reports data.
+
+    Returns:
+        str: The summarized text of comments by category.
+    """
     summaries = []
     feedback_counts = []
     categories = df['classification'].unique()
@@ -74,14 +84,14 @@ def summarize_comments(df):
                 \n\n{comments}
                 """
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",  # Set correct model name
+                model="gpt-3.5-turbo",
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=2000,
                 temperature=0.5
             )
-            summary = response.choices[0].message.content.strip()
+            summary = response.choices[0]['message']['content'].strip()
             summaries.append((category, summary))
     
     # Sort summaries based on feedback count from highest to lowest
@@ -97,17 +107,16 @@ def summarize_comments(df):
 
 
 # Load the tracker into a DataFrame
-if cloud:
-    df = read_csv_from_s3(s3_bucket, tracker_file)  
-else:
-    df = pd.read_csv(tracker_file)
-df.set_index('timestamp', inplace=True) 
+df = load_tracker_data(tracker_file, cloud, s3_client, s3_bucket) 
+df.set_index('timestamp', inplace=True)  
 
 st.markdown("""
-<div style='text-align: center;'>
-    <h1>Summaries by Reporting Category</h1>
-</div>
-""", unsafe_allow_html=True)
+    <div style='text-align: center;'>
+        <h1>Summaries by Reporting Category</h1>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
 
 st.divider()
 
@@ -131,7 +140,7 @@ st.divider()
 st.markdown(
     """
     <div style='text-align: center;'>
-    <h3> Residents' Reports </h3>
+        <h3> Residents' Reports </h3>
     </div>
     """, 
     unsafe_allow_html=True
