@@ -91,7 +91,7 @@ def summarize_comments(df):
                 max_tokens=2000,
                 temperature=0.5
             )
-            summary = response.choices[0]['message']['content'].strip()
+            summary = response.choices[0].message.content.strip()
             summaries.append((category, summary))
     
     # Sort summaries based on feedback count from highest to lowest

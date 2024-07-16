@@ -29,6 +29,9 @@ cloud = st.session_state.cloud
 if cloud:
     s3_bucket = st.session_state.s3_bucket
     s3_client = st.session_state.s3_client
+else:
+    s3_bucket = None
+    s3_client = None
 
 # Hugging Face Inference API URL for clip-vit-base-patch32
 API_URL = (
