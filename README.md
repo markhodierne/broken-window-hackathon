@@ -1,4 +1,4 @@
-# Broken Window Hackathon #1
+# Broken Window Hackathon
 ### Hosted by FutureLondon.org:
 "[Future London](https://futurelondon.org/) is a community of high-agency techno-optimists. We believe that the UK is broken. But it doesn't have to be."
 
